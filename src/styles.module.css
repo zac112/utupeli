@@ -1,0 +1,21 @@
+.app{
+  display:flex;
+  flex-direction:row;
+}
+.resourcebar{
+	background-color:#aaaaaa; 
+	width:100%; 
+	display:flex; 
+	justify-content:space-around;
+	}
+.gameview{
+	width:100%;
+	height:100%;
+}
+.game{	
+	background:grey;
+}
+.menu{
+	background-color:#eeeeee;
+	height:100%;
+}

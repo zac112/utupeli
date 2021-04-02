@@ -1,0 +1,6 @@
+{
+'dbhost':DBHOST,
+'dbuser':DBUSER,
+'dbpassword':DBPASS,
+'serverport':SERVERPORT
+}
