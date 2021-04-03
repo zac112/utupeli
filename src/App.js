@@ -19,20 +19,6 @@ class App extends React.Component{
 		this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 	}
 
-	fetchData(){
-		//Get data from server
-		let gold=100, food=51000000000000, citizens=10;
-		this.setState({
-			gold:gold, 
-			food:food, 
-			citizens:citizens,
-			buildings:{
-				barracks:0,
-				stables:0
-			}});
-		console.log("Fetched data");
-	}
-
 	componentDidMount() {
 		this.updateWindowDimensions();
 		window.addEventListener('resize', this.updateWindowDimensions);
@@ -54,10 +40,13 @@ class App extends React.Component{
 		}
 	}
 	
-	login(key){
-		console.log("Logged in with ",key);
-		this.setState({view:<Overview/>});
-		this.fetchData();
+	login(user){
+		
+		console.log("User logged in ",user);
+		this.setState({
+			...user,
+			view:<Overview/>
+			});
 	}
 	changeview(newView){
 		this.setState({view:newView});

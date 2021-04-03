@@ -1,6 +1,8 @@
 {
-'dbhost':DBHOST,
-'dbuser':DBUSER,
-'dbpassword':DBPASS,
-'serverport':SERVERPORT
+"dbhost":"DBHOST",
+"dbuser":"DBUSER",
+"dbpassword":"DBPASS",
+"serverport":0,
+"gmailSecret":"SECRET"
+"production":false
 }

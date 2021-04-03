@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './Overview.module.css';
+import REST from './connection.js';
 
 class Login extends React.Component{
 	
@@ -8,45 +9,55 @@ class Login extends React.Component{
 		this.state = {
 			logged:false,
 			creatingAccount:false,
-			verification:'hidden'
+			verification:'hidden',
+			readonly:false
 			};
 	}
 	createAccount(){
 		var data = {};
 		const create = (event) => {
 			event.preventDefault();
-			this.setState({verification:'visible'});
-		}
-		
-		const verify = (event) => {
-			event.preventDefault();
-			console.log(data.key);
-			this.props.login(data.key);
-		}
-		
-		const valuechange = (event) => {
-			event.preventDefault();
-			data['key'] = event.target.value;
+			
+			if(data['email'].endsWith('@utu.fi')){
+				REST.post("createAccount",{
+					'id':data['email']
+				},(res) => {
+					console.log("Got key",res);
+					if(res['success']){
+						this.setState({
+							verification:'visible',
+							message:"Check your email for the verification code and the key to your city!",
+							readonly:"readonly"
+							});					
+					}else{
+						this.setState({message:"That address seems to be in use"});
+					}
+				}
+				);
+			}else{
+				this.setState({message:"That address is not a valid utu-email."});
+			}
 			
 		}
+		
+		const emailchange = (event) => {
+			event.preventDefault();
+			data['email'] = event.target.value;			
+		}
+		
 		return(
 		<div className={styles.overview}>
 		{this.props.translations.CREATEINSTRUCTIONS}
 			<form onSubmit={create}>
 				<label>
 				{this.props.translations.ENTERUTUMAIL}
-					<input type="text" onChange={valuechange} />
+					<input type="text" onChange={emailchange} readOnly={this.state.readonly}/>
 				</label>
 				<input type="submit" value={this.props.translations.CREATE} />
 			</form>
 			
-			<form style={{visibility:this.state.verification}} onSubmit={verify}>
-				<label>
-				{this.props.translations.VERIFICATIONENTRY}
-					<input type="text" onChange={valuechange} />
-				</label>
-				<input type="submit" value={this.props.translations.VERIFY} />
-			</form>
+			{this.state.message}
+			
 		</div>);
 	}
 	
@@ -54,8 +65,17 @@ class Login extends React.Component{
 		var data = {};
 		const login = (event) => {
 			event.preventDefault();
-			console.log(data.key);
-			this.props.login(data.key);
+			REST.post('login',
+			{key:data.key},
+			(res) => {
+				if(res['player']){
+					console.log(data.key);
+					this.props.login(data.key);
+				}else{
+					this.setState({message:"No player data found."});
+				}
+			});
+			
 		}
 		
 		const valuechange = (event) => {
@@ -73,9 +93,9 @@ class Login extends React.Component{
 				</label>
 				<input type="submit" value={this.props.translations.LOGIN} />
 			</form>
-			
+			{this.state.message}
 			<div onClick={() => this.setState({creatingAccount:true})}>
-				Don't have a city yet? Create one here!
+				Don't have a city yet? Create one by clicking here!
 			</div>
 		</div>);
 	}

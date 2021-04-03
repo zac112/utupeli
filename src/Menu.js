@@ -23,7 +23,7 @@ class Menu extends React.Component{
 		
 		return(
 		<div className={styles.menu}>
-		<TickClock interval={6000}/>
+		<TickClock translations={this.props.translations} interval={6000}/>
 		
 		
 	<Link target=<Overview {...this.props}/> name={this.props.translations.OVERVIEW}/>

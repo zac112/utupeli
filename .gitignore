@@ -23,4 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 #Secret server stuff
-server/options.json
+server/settings.json
+src/settings.json

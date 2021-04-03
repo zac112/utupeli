@@ -36,7 +36,7 @@ class TickClock extends React.Component{
 	render(){
 		return(
 		<div>
-		Next turn in {this.state.interval/1000}
+		{this.props.translations.NEXTTURN} {this.state.interval/1000}
 		</div>
 		);
 	}
