@@ -22,13 +22,19 @@ class Login extends React.Component{
 				REST.post("createAccount",{
 					'id':data['email']
 				},(res) => {
-					console.log("Got key",res);
+					console.log("Got key",res);					
 					if(res['success']){
 						this.setState({
 							verification:'visible',
-							message:"Check your email for the verification code and the key to your city!",
+							message:this.props.translations.CHECKEMAIL,
 							readonly:"readonly"
 							});					
+					}if (res['dev']){
+						this.setState({
+							verification:'visible',
+							message:res['dev'],
+							readonly:"readonly"
+							});		
 					}else{
 						this.setState({message:"That address seems to be in use"});
 					}
@@ -68,9 +74,10 @@ class Login extends React.Component{
 			REST.post('login',
 			{key:data.key},
 			(res) => {
+				console.log("Got logged in player:",res);
 				if(res['player']){
 					console.log(data.key);
-					this.props.login(data.key);
+					this.props.login(res['player']);
 				}else{
 					this.setState({message:"No player data found."});
 				}
@@ -95,7 +102,7 @@ class Login extends React.Component{
 			</form>
 			{this.state.message}
 			<div onClick={() => this.setState({creatingAccount:true})}>
-				Don't have a city yet? Create one by clicking here!
+				{this.props.translations.REGISTERLINK}
 			</div>
 		</div>);
 	}

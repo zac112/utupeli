@@ -45,11 +45,15 @@ class App extends React.Component{
 		console.log("User logged in ",user);
 		this.setState({
 			...user,
+			town:user.mainTown,
 			view:<Overview/>
 			});
 	}
 	changeview(newView){
 		this.setState({view:newView});
+	}
+	changeTown(newTown){
+		this.setState({town:newTown});
 	}
 	
 	statechange(state) {
@@ -60,9 +64,9 @@ class App extends React.Component{
 		
 		const Resourcebar = () => (
 			<div className={styles.resourcebar}>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.GOLD}: {this.state.gold}</div>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.FOOD}: {this.state.food}</div>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.POPULATION}: {this.state.citizens}</div>
+				<div style={{flex: "1 1 100px"}}>{this.state.translations.GOLD}: {this.state.town.gold}</div>
+				<div style={{flex: "1 1 100px"}}>{this.state.translations.FOOD}: {this.state.town.food}</div>
+				<div style={{flex: "1 1 100px"}}>{this.state.translations.POPULATION}: {this.state.town.citizens}</div>
 			</div>
 		);
 		const Gameview = () => (
@@ -78,7 +82,7 @@ class App extends React.Component{
 		}else{
 			return(
 			<div className={styles.app} style={{height:this.state.height, width:this.state.width}}>
-				<Menu {...this.state} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
+				<Menu {...this.state} townChangeCallback={this.changeTown.bind(this)} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
 				<Gameview className={styles.gameview}/>
 			</div>);
 		}

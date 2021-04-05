@@ -10,7 +10,7 @@ class Buildings extends React.Component{
 				//Send data to server
 				console.log(this.props);
 				console.log("Bought "+formdata.amount+" "+data.type);
-				var state = {'buildings':this.props.buildings}
+				var state = {...this.props.town}
 				state['buildings'][data.type] += formdata.amount
 				this.props.statechange(state);
 			};
@@ -19,12 +19,12 @@ class Buildings extends React.Component{
 				formdata.amount=parseInt(amount.target.value.replace(/\D/g,"")) || 0;
 				console.log(formdata, amount.target.value);
 			}
-			var owned = this.props.buildings[data.type] || 0;
+			var owned = this.props.town.buildings[data.type] || 0;
 			return(
 			<div style={{width:"200px"}}>
 			<form onSubmit={purchase}>
 				<label>
-				{owned} {data.name} (Max:{this.props.gold/data.cost})
+				{owned} {data.name} (Max:{this.props.town.gold/data.cost})
 					<input type="text"  onChange={valuechange} />
 				</label>
 				<input type="submit" value={this.props.translations.BUY} />
@@ -37,7 +37,7 @@ class Buildings extends React.Component{
 		<Building name={this.props.translations.ARMORY} type="armory" cost={10}/>
 		<Building name={this.props.translations.BARRACKS} type="barracks" cost={10}/>
 		<Building name={this.props.translations.STABLES} type="stables" cost={10}/>
-		<Building name={this.props.translations.HOUSE} type="houses" cost={10}/>
+		<Building name={this.props.translations.HOUSE} type="house" cost={10}/>
 		<Building name={this.props.translations.GOLDMINE} type="goldmine" cost={10}/>
 		<Building name={this.props.translations.LIBRARY} type="library" cost={10}/>
 				

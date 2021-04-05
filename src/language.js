@@ -22,6 +22,10 @@ class Translations{
 			'fi':'Osta',
 			'en':'Buy'
 		},
+		'CHECKEMAIL':{
+			'fi':"Tarkista sähköpostisi rekisteröinnin loppuunviemistä ja kaupunkisi avainta varten.",
+			'en':"Check your email for the verification code and the key to your city!"
+		},
 		'CREATE':{
 			'fi':'Luo tunnus',
 			'en':'Create account'
@@ -86,6 +90,10 @@ class Translations{
 			'fi':'Asukkaat',
 			'en':'Population'
 		},		
+		'REGISTERLINK':{
+			'fi':'Eikö sinulla ole vielä kaupunkia? Klikkaa tästä!',
+			'en':'Don\'t have a city yet? Create one by clicking here!'
+		},
 		'SCOUT':{
 			'fi':'Tiedustelija',
 			'en':'Scout'

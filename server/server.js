@@ -1,3 +1,4 @@
+var mongo = require('mongodb').MongoClient;	
 var fs = require('fs');
 var cors = require('cors');
 var express = require('express');
@@ -5,15 +6,16 @@ var app = express();
 var port=3001;
 var address="localhost";
 var dbAddress=undefined;
-var db=undefined;
+var db=require('./db');
 var gmailSecret = undefined;
 var login = require('./routes/login');
 
 fs.readFile('settings.json', 'utf8', function(err, data) {
 	if (err) throw err;
 	var data = JSON.parse(data);
-	port = data.serverport;	
-	//mongodb = mongo.connect(data.dbhost);
+	port = data.serverport;		 
+	data['dbconnection'] = mongo.connect(data.dbhost);
+	db.init(data);
 	login.init(data);
 });
 app.use(cors({
@@ -27,20 +29,15 @@ app.post("/createAccount", login.createAccount);
 app.post("/login", login.login);
 app.get("/verifyAccount/:user/:key", login.verifyAccountKey);
 
-app.get("/page/:id",function(request, response){
-    var id = request.params.id;
-    // do something with id
-    // send a response to user based on id
-    var obj = { id : id, Content : "content " +id };
 
-    response.writeHead(200, {"Content-Type": "application/json"});
-    response.write(JSON.stringify(obj));
-});
-
+try{
 var server = app.listen(port, address, () =>{
 	console.log("Server running at "+address+":"+port);
 });
-	
+}catch(err){
+	console.log(err);
+	shutDown();
+}
 process.on('SIGTERM', shutDown);
 process.on('SIGINT', shutDown);
 

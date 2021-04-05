@@ -20,7 +20,7 @@ class Army extends React.Component{
 			<div style={{width:"200px"}}>
 			<form onSubmit={purchase}>
 				<label>
-					{data.name} (Max:{this.props.gold/data.cost})
+					{data.name} (Max:{this.props.town.gold/data.cost})
 					<input type="text"  onChange={valuechange} />
 				</label>
 				<input type="submit" value={this.props.translations.BUY} />
@@ -28,9 +28,9 @@ class Army extends React.Component{
 			</div>);
 		}
 		var units =[<Unit key={0} name={this.props.translations.SCOUT} type="Scout" cost={10}/>];
-		if (this.props.buildings.barracks > 0)
+		if (this.props.town.buildings.barracks && this.props.town.buildings.barracks > 0)
 			units.push(<Unit key={1} name={this.props.translations.SOLDIER} type="Soldier" cost={10}/>);
-		if (this.props.buildings.stables > 0)
+		if (this.props.town.buildings.stables && this.props.town.buildings.stables > 0)
 			units.push(<Unit key={2} name={this.props.translations.KNÍGHT} type="Knight" cost={10}/>);
 		
 		return(
