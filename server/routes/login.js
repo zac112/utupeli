@@ -61,10 +61,12 @@ function createAccount(req, res){
 					},
 					towns:[{
 						coords:[0,0],
+						id:0,
 						buildings:{
 							farm:10,
 							house:20
-							},						
+							},
+						buildqueue:{},
 						land:10,
 						population:10,
 						gold:100,

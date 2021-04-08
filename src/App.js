@@ -45,6 +45,7 @@ class App extends React.Component{
 		console.log("User logged in ",user);
 		this.setState({
 			...user,
+			userId:user.key,
 			town:user.towns[0],
 			view:<Overview/>
 			});
@@ -82,7 +83,7 @@ class App extends React.Component{
 		}else{
 			return(
 			<div className={styles.app} style={{height:this.state.height, width:this.state.width}}>
-				<Menu {...this.state} townChangeCallback={this.changeTown.bind(this)} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
+				<Menu {...this.state} userId={this.state.userId} townChangeCallback={this.changeTown.bind(this)} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
 				<Gameview className={styles.gameview}/>
 			</div>);
 		}

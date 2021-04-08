@@ -1,18 +1,50 @@
 import React from 'react';
+import REST from './connection';
 
 class Buildings extends React.Component{
 	
+	constructor(props){
+		super(props);
+		this.state = {}
+	}
+	
 	render(){
+		console.log("Building props",this.props);
 		var formdata = {amount : 0};
 		const Building = (data) => {
 			const purchase = (event) => {
 				event.preventDefault();
-				//Send data to server
-				console.log(this.props);
-				console.log("Bought "+formdata.amount+" "+data.type);
-				var state = {...this.props.town}
-				state['buildings'][data.type] += formdata.amount
-				this.props.statechange(state);
+				var type = data.type;
+				var queue = {};
+				queue[type] = formdata.amount;
+				REST.post('build',{
+					key:this.props.userId,
+					town:this.props.town.id,
+					'building': queue
+				},
+				(result) => {
+					if(!result['success']){
+						console.log("Build failed.");
+						return;
+					}
+					console.log("Build success");
+					
+					//Send data to server
+					console.log(this.props);
+					console.log("Bought "+formdata.amount+" "+data.type);
+					var town = this.props.town;
+					town['buildqueue'] = {}
+					town['buildqueue'][data.type] = (town['buildqueue'][data.type]|0)+ formdata.amount;
+					var towns = this.props.towns;
+					towns[this.props.town.id] = town 
+					var state = {
+						'town':town,
+						'towns':towns
+						}
+					
+					this.props.statechange(state);
+				});
+				
 			};
 			const valuechange = (amount) =>{
 				
@@ -41,6 +73,7 @@ class Buildings extends React.Component{
 		<Building name={this.props.translations.GOLDMINE} type="goldmine" cost={10}/>
 		<Building name={this.props.translations.LIBRARY} type="library" cost={10}/>
 				
+				{this.props.town.buildqueue?.armory|"fsaf"}
 		</div>
 		)
 	}

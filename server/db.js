@@ -50,7 +50,7 @@ function findOne(table, query, callback, projection ={}){
 function update(table, query, values, callback){
 	mongo.connect(dbAddress, function(err, db){
 		db.db('utupeli').collection(table).updateOne(query, values, function(err, result){
-			if (err) throw err;
+			if (err) {console.trace();throw err;}
 			callback(result);
 			db.close();
 		});

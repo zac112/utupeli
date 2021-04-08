@@ -10,6 +10,7 @@ var db=require('./db');
 var gmailSecret = undefined;
 var login = require('./routes/login');
 var tick = require('./tick');
+var building = require('./routes/building');
 
 fs.readFile('settings.json', 'utf8', function(err, data) {
 	if (err) throw err;
@@ -32,6 +33,7 @@ app.get("/verifyAccount/:user/:key", login.verifyAccountKey);
 
 app.get("/tick", (req, res) => res.json({time:tick.nextTick().getTime()}));
 
+app.post("/build",building.build);
 
 try{	
 	var server = app.listen(port, address, () =>{
@@ -61,5 +63,5 @@ function shutDown() {
     setTimeout(() => {
         console.error('Could not close connections in time, forcefully shutting down');
         process.exit(1);
-    }, 10000);	
+    }, 2000);	
 };

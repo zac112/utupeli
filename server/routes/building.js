@@ -10,28 +10,42 @@ function verify(model, data){
 }
 /*{
 	key,
-	townIndex,
-	buildings:{
+	town,
+	building:{
 		building:number built
 	}
 }*/
 function build(req, res){
 	data = req.body;
 	try{
-		verify(data,{"key":typeof(""),"townIndex":typeof(2),"buildings":typeof({})});
+		verify(data,{"key":typeof(""),"townIndex":typeof(2),"building":typeof({})});
 	}catch(err){
 		console.log(err)
 		res.json({});
 	}	
 	
-	db.insertOne('actions',{
-		'key':data['key'], 
-		'townIndex':data['townIndex'], 
-		'buildings':data['buildings'],
-		'finish':Date.now()+10*60*1000}, (result) => {
-		console.log("Inserted event",data);
+	db.findOne('users',{key:data.key}, (result)=>{		
+		town = result.gameData.towns[data.town];
+		if (!town) {console.log("No towns for user",data.key); return;}
+		var buildings = town.buildqueue;
+		console.log(data,town,buildings);
+		
+		Object.keys(data.building).forEach(b => {
+			console.log('key:',b, buildings,data.building[b]);
+			if(!buildings[b]){
+				buildings[b] = data.building[b];
+			}else{
+				buildings[b] += data.building[b];
+			}
+		});
+		var buildqueue =  {};
+		buildqueue["gameData.towns.$.buildqueue"] = buildings;
+		console.log("buildque:",buildqueue);
+		db.update('users',{key:data.key, "gameData.towns.$.id":data.townIndex},{"$set":buildqueue},()=> {
+			res.json({success:true});
+		});
 	});
-	
+		
 }
 
 module.exports={

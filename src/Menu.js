@@ -9,7 +9,7 @@ import Buildings from './Buildings.js';
 class Menu extends React.Component{
 	
 	render(){
-		console.log(this.props);
+		console.log("Menu props",this.props);
 		const Link = (linkprops) => {
 			const onclick = (e)=> {
 				this.props.viewChangeCallback(linkprops.target);
