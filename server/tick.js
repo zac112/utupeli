@@ -17,22 +17,32 @@ function calculateFoodTick(player){
 }
 
 function tick(){	
+	var start = new Date();
+	console.log("Tick started at",start.toLocaleString());
+	
 	tickfuncs = [calculateFoodTick, calculateGoldTick, armyQueueTick, buildQueueTick]
 	db.find('users',{},(res)=>{		
 		res.forEach(player => {
-			console.log("tick for player",player);
 			tickfuncs.forEach(e => e(player))	
 		});		
 	});
 	
-	
+	var end = new Date();
+	console.log("Tick finished at",end.toLocaleString(),"in",(end.getTime()-start.getTime()),"ms");
 }
 
-function buildEvent(event){
-	//chekc who built and add to queue
+const tickInterval = 10*60*1000;
+
+function nextTick(){
+	var t = tickInterval/60/1000;
+	var d = new Date();
+	d.setSeconds(0);
+	d.setMinutes(parseInt(d.getMinutes()/t+1)*t);
+	return d;
 }
 
 module.exports = {
 	tick:tick,
-	buildEvent:buildEvent
+	nextTick:nextTick,
+	tickInterval:tickInterval
 }

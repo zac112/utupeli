@@ -30,15 +30,19 @@ app.post("/createAccount", login.createAccount);
 app.post("/login", login.login);
 app.get("/verifyAccount/:user/:key", login.verifyAccountKey);
 
+app.get("/tick", (req, res) => res.json({time:tick.nextTick().getTime()}));
 
-try{
-	var tickTime = 10*60*1000 //10min
+
+try{	
 	var server = app.listen(port, address, () =>{
 		console.log("Server running at "+address+":"+port);
-		var d = new Date()
-		d.setMinutes(parseInt(d.getMinutes()/10+1)*10)
-		console.log("First tick at ",d.toLocaleString());
-		setTimeout(() => setInterval(tick.tick, tickTime), d.getTime()-Date.now());
+		
+		var d = tick.nextTick();
+		console.log("First tick at ",d.toLocaleString(),"in",d-new Date(),"ms");
+		setTimeout(() => {
+			tick.tick();
+			setInterval(tick.tick, tick.tickInterval);
+			}, d-Date.now());
 	});
 }catch(err){
 	console.log(err);
