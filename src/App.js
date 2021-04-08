@@ -45,7 +45,7 @@ class App extends React.Component{
 		console.log("User logged in ",user);
 		this.setState({
 			...user,
-			town:user.mainTown,
+			town:user.towns[0],
 			view:<Overview/>
 			});
 	}
@@ -53,7 +53,7 @@ class App extends React.Component{
 		this.setState({view:newView});
 	}
 	changeTown(newTown){
-		this.setState({town:newTown});
+		this.setState({town:this.state.towns[newTown]});
 	}
 	
 	statechange(state) {

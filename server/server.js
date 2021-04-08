@@ -9,6 +9,7 @@ var dbAddress=undefined;
 var db=require('./db');
 var gmailSecret = undefined;
 var login = require('./routes/login');
+var tick = require('./tick');
 
 fs.readFile('settings.json', 'utf8', function(err, data) {
 	if (err) throw err;
@@ -31,9 +32,14 @@ app.get("/verifyAccount/:user/:key", login.verifyAccountKey);
 
 
 try{
-var server = app.listen(port, address, () =>{
-	console.log("Server running at "+address+":"+port);
-});
+	var tickTime = 10*60*1000 //10min
+	var server = app.listen(port, address, () =>{
+		console.log("Server running at "+address+":"+port);
+		var d = new Date()
+		d.setMinutes(parseInt(d.getMinutes()/10+1)*10)
+		console.log("First tick at ",d.toLocaleString());
+		setTimeout(() => setInterval(tick.tick, tickTime), d.getTime()-Date.now());
+	});
 }catch(err){
 	console.log(err);
 	shutDown();

@@ -59,7 +59,7 @@ function createAccount(req, res){
 				gameData:{
 					hero:{						
 					},
-					mainTown:{
+					towns:[{
 						coords:[0,0],
 						buildings:{
 							farm:10,
@@ -69,7 +69,7 @@ function createAccount(req, res){
 						population:10,
 						gold:100,
 						food:100
-						}
+						}]
 				}
 			};
 			
