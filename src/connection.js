@@ -5,7 +5,7 @@ class REST{
 		if (typeof body === 'object')
 			body = JSON.stringify(body);
 		
-		console.log("Sending body:"+body+" "+(typeof body));
+		console.log("POST Sending body:"+body+" "+(typeof body));
 		fetch(settings.server+":"+settings.port+"/"+endpoint, {
 		  method: 'POST',
 		  headers: {
@@ -14,6 +14,12 @@ class REST{
 		  },
 		  body: body
 		})
+		.then(response => response.json())
+		.then(response => callback(response));
+	}
+	
+	static get(endpoint, callback){		
+		fetch(settings.server+":"+settings.port+"/"+endpoint)
 		.then(response => response.json())
 		.then(response => callback(response));
 	}

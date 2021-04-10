@@ -11,7 +11,7 @@ class TickClock extends React.Component{
 	}
 	
 	componentDidMount(){
-		this.refresher = setTimeout(this.refresh.bind(this),this.state.interval);
+		this.refresher = setTimeout(this.refresh.bind(this),this.props.interval);
 		this.ticker = setInterval(this.tick.bind(this), 1000);
 	}
 	
@@ -22,8 +22,9 @@ class TickClock extends React.Component{
 	
 	refresh() {
 		//get data from server		
-		this.setState({interval:60000});
-		this.refresher = setTimeout(this.refresh.bind(this),this.state.interval);
+		
+		this.setState({interval:this.props.interval});
+		this.refresher = setTimeout(this.refresh.bind(this),this.props.interval);
 		
 	}
 	

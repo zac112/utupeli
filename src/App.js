@@ -4,6 +4,7 @@ import Overview from './Overview.js';
 import Login from './Login.js';
 import React from 'react';
 import Translations from './language.js';
+import REST from './connection';
 
 class App extends React.Component{
 	constructor(props) {
@@ -21,7 +22,7 @@ class App extends React.Component{
 
 	componentDidMount() {
 		this.updateWindowDimensions();
-		window.addEventListener('resize', this.updateWindowDimensions);
+		window.addEventListener('resize', this.updateWindowDimensions);		
 		
 	}
 
@@ -33,6 +34,28 @@ class App extends React.Component{
 		this.setState({ width: window.innerWidth, height: window.innerHeight });
 	}
 
+	async getNextTick(){
+		REST.get('tick', res =>{
+			var time = parseInt(res.time)-new Date()+Math.random(1000)+1000;
+			this.setState({'nextTick':time});
+			setTimeout(this.fetchData.bind(this), time);			
+		});
+	}
+	
+	fetchData(){
+		console.log(this.state);
+		var townid = this.state.town.id		
+		REST.get('player/'+this.state.userId, result =>{
+			if (!result['success']) return;
+			this.setState({
+			...result.player,
+			town:result.player.towns[townid]			
+			});			
+			this.getNextTick();
+		});	
+		setTimeout(this.render.bind(this),500);		
+	}
+
 	changeLanguage(lang){
 		if (lang === "en" || lang === "fi"){
 			var t = new Translations();
@@ -42,13 +65,14 @@ class App extends React.Component{
 	
 	login(user){
 		
-		console.log("User logged in ",user);
+		console.log("User logged in ",user);		
 		this.setState({
 			...user,
 			userId:user.key,
 			town:user.towns[0],
 			view:<Overview/>
 			});
+		this.getNextTick();
 	}
 	changeview(newView){
 		this.setState({view:newView});
@@ -83,8 +107,8 @@ class App extends React.Component{
 		}else{
 			return(
 			<div className={styles.app} style={{height:this.state.height, width:this.state.width}}>
-				<Menu {...this.state} userId={this.state.userId} townChangeCallback={this.changeTown.bind(this)} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
-				<Gameview className={styles.gameview}/>
+				<Menu {...this.state} nextTick={this.state.nextTick} userId={this.state.userId} townChangeCallback={this.changeTown.bind(this)} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
+				<Gameview className={styles.gameview} nextTick={this.state.nextTick}/>
 			</div>);
 		}
 	}

@@ -16,7 +16,8 @@ fs.readFile('settings.json', 'utf8', function(err, data) {
 	if (err) throw err;
 	var data = JSON.parse(data);
 	port = data.serverport;		 
-	data['dbconnection'] = mongo.connect(data.dbhost);
+	//data['dbconnection'] = mongo.connect(data.dbhost);
+	console.log(db);
 	db.init(data);
 	login.init(data);
 });
@@ -34,6 +35,12 @@ app.get("/verifyAccount/:user/:key", login.verifyAccountKey);
 app.get("/tick", (req, res) => res.json({time:tick.nextTick().getTime()}));
 
 app.post("/build",building.build);
+
+app.get("/player/:id", (req, res) => {
+	db.findOne('users',{key:req.params.id}, player => {
+		res.json({'player':player.gameData, 'success':true});
+		});
+	});
 
 try{	
 	var server = app.listen(port, address, () =>{

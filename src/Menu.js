@@ -21,15 +21,19 @@ class Menu extends React.Component{
 			)
 		};
 		
+		var buildings = <Buildings {...this.props}/>;
+		var army = <Army {...this.props}/>;
+		var warroom = <WarRoom {...this.props}/>;
+		var overview = <Overview {...this.props}/>;
 		return(
 		<div className={styles.menu}>
-		<TickClock translations={this.props.translations} interval={6000}/>
+		<TickClock translations={this.props.translations} interval={parseInt(this.props.nextTick)}/>
 		
 		
-	<Link target=<Overview {...this.props}/> name={this.props.translations.OVERVIEW}/>
-		<Link target=<Buildings {...this.props}/> name={this.props.translations.BUILDINGS}/>
-		<Link target=<Army {...this.props}/> name={this.props.translations.ARMY}/>
-		<Link target=<WarRoom {...this.props}/> name={this.props.translations.WARROOM}/>
+		<Link target={overview} name={this.props.translations.OVERVIEW} nextTick={this.props.nextTick}/>
+		<Link target={buildings} name={this.props.translations.BUILDINGS} nextTick={this.props.nextTick}/>
+		<Link target={army} name={this.props.translations.ARMY} nextTick={this.props.nextTick}/>
+		<Link target={warroom} name={this.props.translations.WARROOM} nextTick={this.props.nextTick}/>
 				
 		</div>);
 	}

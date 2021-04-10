@@ -33,7 +33,6 @@ class Buildings extends React.Component{
 					console.log(this.props);
 					console.log("Bought "+formdata.amount+" "+data.type);
 					var town = this.props.town;
-					town['buildqueue'] = {}
 					town['buildqueue'][data.type] = (town['buildqueue'][data.type]|0)+ formdata.amount;
 					var towns = this.props.towns;
 					towns[this.props.town.id] = town 
@@ -73,7 +72,7 @@ class Buildings extends React.Component{
 		<Building name={this.props.translations.GOLDMINE} type="goldmine" cost={10}/>
 		<Building name={this.props.translations.LIBRARY} type="library" cost={10}/>
 				
-				{this.props.town.buildqueue?.armory|"fsaf"}
+		{Object.keys(this.props.town.buildqueue).map(e => (<div key={e}>{e}:{this.props.town.buildqueue[e]}</div>))}
 		</div>
 		)
 	}
