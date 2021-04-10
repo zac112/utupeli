@@ -6,6 +6,9 @@ import React from 'react';
 import Translations from './language.js';
 import REST from './connection';
 
+import { connect } from "react-redux";
+import {initialize, refresh} from './redux/actions';
+
 class App extends React.Component{
 	constructor(props) {
 		super(props);
@@ -43,14 +46,17 @@ class App extends React.Component{
 	}
 	
 	fetchData(){
-		console.log(this.state);
-		var townid = this.state.town.id		
-		REST.get('player/'+this.state.userId, result =>{
+		var townid = this.props.town.id		
+		REST.get('player/'+this.props.userId, result =>{
 			if (!result['success']) return;
-			this.setState({
+			this.props.refresh({
+				...result.player,
+				town:result.player.towns[townid]			
+			});
+			/*this.setState({
 			...result.player,
 			town:result.player.towns[townid]			
-			});			
+			});*/
 			this.getNextTick();
 		});	
 		setTimeout(this.render.bind(this),500);		
@@ -65,13 +71,21 @@ class App extends React.Component{
 	
 	login(user){
 		
-		console.log("User logged in ",user);		
+		console.log("User logged in ",user);
+		this.props.initialize(
+		{...user,
+		userId:user.key,
+		town:user.towns[0],
+		translations:new Translations().getLang('en').translations
+		});
+				
 		this.setState({
-			...user,
-			userId:user.key,
-			town:user.towns[0],
+		//	...user,
+		//	userId:user.key,
+		//	town:user.towns[0],
 			view:<Overview/>
 			});
+		
 		this.getNextTick();
 	}
 	changeview(newView){
@@ -89,9 +103,9 @@ class App extends React.Component{
 		
 		const Resourcebar = () => (
 			<div className={styles.resourcebar}>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.GOLD}: {this.state.town.gold}</div>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.FOOD}: {this.state.town.food}</div>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.POPULATION}: {this.state.town.citizens}</div>
+				<div style={{flex: "1 1 100px"}}>{this.state.translations.GOLD}: {this.props.town.gold}</div>
+				<div style={{flex: "1 1 100px"}}>{this.state.translations.FOOD}: {this.props.town.food}</div>
+				<div style={{flex: "1 1 100px"}}>{this.state.translations.POPULATION}: {this.props.town.citizens}</div>
 			</div>
 		);
 		const Gameview = () => (
@@ -107,12 +121,20 @@ class App extends React.Component{
 		}else{
 			return(
 			<div className={styles.app} style={{height:this.state.height, width:this.state.width}}>
-				<Menu {...this.state} nextTick={this.state.nextTick} userId={this.state.userId} townChangeCallback={this.changeTown.bind(this)} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
-				<Gameview className={styles.gameview} nextTick={this.state.nextTick}/>
+				<Menu translations={this.state.translations} userId={this.props.userId} townChangeCallback={this.changeTown.bind(this)} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
+				<Gameview className={styles.gameview}/>
 			</div>);
 		}
 	}
 }
-export default App;
+
+const mapStateToProps = (state) => {
+	console.log("Matpstate",state);
+	return({
+		town: state.build.town,
+		userId: state.build.userId
+	});
+}
+export default connect(mapStateToProps,{initialize, refresh})(App);
 
 

@@ -1,5 +1,7 @@
 import React from 'react';
 import REST from './connection';
+import { connect } from "react-redux";
+import {build_building} from './redux/actions';
 
 class Buildings extends React.Component{
 	
@@ -32,7 +34,7 @@ class Buildings extends React.Component{
 					//Send data to server
 					console.log(this.props);
 					console.log("Bought "+formdata.amount+" "+data.type);
-					var town = this.props.town;
+					/*var town = this.props.town;
 					town['buildqueue'][data.type] = (town['buildqueue'][data.type]|0)+ formdata.amount;
 					var towns = this.props.towns;
 					towns[this.props.town.id] = town 
@@ -41,7 +43,11 @@ class Buildings extends React.Component{
 						'towns':towns
 						}
 					
-					this.props.statechange(state);
+					this.props.statechange(state);*/
+					this.props.build_building({
+						town:this.props.town.id,
+						'building': queue
+					});
 				});
 				
 			};
@@ -78,4 +84,15 @@ class Buildings extends React.Component{
 	}
 }
 
-export default Buildings;
+const mapStateToProps = (state) => {
+	console.log(state);
+	return ({
+		userId: state.build.userId,
+		town: state.build.town,
+		translations: state.build.translations
+		});
+}
+const actiondispatch = {
+	build_building
+}
+export default connect(mapStateToProps,actiondispatch)(Buildings);

@@ -8,11 +8,17 @@ import Buildings from './Buildings.js';
 
 class Menu extends React.Component{
 	
+	constructor(props){
+		super(props);
+		this.state = {};
+	}
+	
 	render(){
 		console.log("Menu props",this.props);
 		const Link = (linkprops) => {
 			const onclick = (e)=> {
 				this.props.viewChangeCallback(linkprops.target);
+				this.setState({view:linkprops.target});
 				console.log("Clicked ",linkprops.target)
 			};
 			
@@ -27,7 +33,7 @@ class Menu extends React.Component{
 		var overview = <Overview {...this.props}/>;
 		return(
 		<div className={styles.menu}>
-		<TickClock translations={this.props.translations} interval={parseInt(this.props.nextTick)}/>
+		<TickClock translations={this.props.translations} onTick={this.props.viewChangeCallback} interval={parseInt(this.props.nextTick)}/>
 		
 		
 		<Link target={overview} name={this.props.translations.OVERVIEW} nextTick={this.props.nextTick}/>
