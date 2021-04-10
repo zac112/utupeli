@@ -78,7 +78,7 @@ class Buildings extends React.Component{
 		<Building name={this.props.translations.GOLDMINE} type="goldmine" cost={10}/>
 		<Building name={this.props.translations.LIBRARY} type="library" cost={10}/>
 				
-		{Object.keys(this.props.town.buildqueue).map(e => (<div key={e}>{e}:{this.props.town.buildqueue[e]}</div>))}
+		{Object.keys(this.props.town.buildqueue).map(e => (<div key={e}>{e}:{this.props.buildqueue[e]}</div>))}
 		</div>
 		)
 	}
@@ -89,7 +89,8 @@ const mapStateToProps = (state) => {
 	return ({
 		userId: state.build.userId,
 		town: state.build.town,
-		translations: state.build.translations
+		translations: state.build.translations,
+		buildqueue: state.build.town.buildqueue
 		});
 }
 const actiondispatch = {

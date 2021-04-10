@@ -1,3 +1,8 @@
-export const BUILD_BUILDING = "BUILD_BUILDING";
-export const INITIALIZE = "INITIALIZE";
-export const REFRESH = "REFRESH";
+const actions = {
+	BUILD_BUILDING : "BUILD_BUILDING",
+	INITIALIZE : "INITIALIZE",
+	REFRESH : "REFRESH",
+	TICK : "TICK",
+	TOWNCHANGE : "TOWNCHANGE"
+}
+export default actions

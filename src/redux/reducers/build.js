@@ -1,4 +1,4 @@
-import { INITIALIZE, BUILD_BUILDING, REFRESH } from "../actionTypes";
+import types from "../actionTypes";
 
 const initialState = {};
 
@@ -6,32 +6,47 @@ export default function(state = initialState, action) {
 	console.log(state);
 	console.log("action",action);
   switch (action.type) {
-	case INITIALIZE:{
+	case types.INITIALIZE:{
 		return ({...action.payload})	
 	}
-	case REFRESH:{
+	case types.REFRESH:{
 		return ({
 			...state,
 			...action.payload
 		});
 	}
-	case BUILD_BUILDING: {
+	case types.BUILD_BUILDING: {
+		console.log("BUILD",state)
 		const { town, building } = action.payload.content;
-		let buildings = state.town.buildqueue;
-		if (!buildings) buildings = {}
+		let queue = {...state.town.buildqueue}
 		Object.keys(building).forEach(b => {
-			console.log('key:',b, buildings);
-			if(!buildings[b]){
-				buildings[b] = building[b];
+			console.log('key:',b, queue);
+			if(!queue[b]){
+				queue[b] = building[b];
 			}else{
-				buildings[b] += building[b];
+				queue[b] += building[b];
 			}
 		});    
-    return {
-        ...state,
-        
+    var newState = {
+        ...state        
     };
-    }	
+	console.log("newstate",newState)
+	newState['towns'][town]['buildqueue'] = queue;
+	console.log("newstate",newState)
+	return newState;
+    }
+	case types.TOWNCHANGE:{
+		return {
+			...state,
+			'town':state.towns[action.payload.townid]
+		}
+	}
+	case types.TICK:{
+		return({
+			...state,
+			'nextTick':action.nextTick
+		})
+	}
     default:
 		return state;
   }

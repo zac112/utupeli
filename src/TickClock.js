@@ -1,17 +1,19 @@
 import React from 'react';
 
+import { connect } from "react-redux";
+
 class TickClock extends React.Component{
 	
 	constructor(props){
 		super(props);
 		
-		this.state = {interval:props.interval};
+		this.state = {interval:props.nextTick};
 		console.log(this.state);
 
 	}
 	
 	componentDidMount(){
-		this.refresher = setTimeout(this.refresh.bind(this),this.props.interval);
+		this.refresher = setTimeout(this.refresh.bind(this),this.props.nextTick);
 		this.ticker = setInterval(this.tick.bind(this), 1000);
 	}
 	
@@ -23,8 +25,8 @@ class TickClock extends React.Component{
 	refresh() {
 		//get data from server		
 		
-		this.setState({interval:this.props.interval});
-		this.refresher = setTimeout(this.refresh.bind(this),this.props.interval);
+		this.setState({interval:this.props.nextTick});
+		this.refresher = setTimeout(this.refresh.bind(this),this.props.nextTick);
 		
 	}
 	
@@ -37,10 +39,14 @@ class TickClock extends React.Component{
 	render(){
 		return(
 		<div>
-		{this.props.translations.NEXTTURN} {this.state.interval/1000}
+		{this.props.translations.NEXTTURN} {parseInt(this.state.interval/1000)}
 		</div>
 		);
 	}
 }
 
-export default TickClock;
+const mapStateToProps = (state) => {
+	return {'nextTick': parseInt(state.build.nextTick)}
+}
+
+export default connect(mapStateToProps)(TickClock);

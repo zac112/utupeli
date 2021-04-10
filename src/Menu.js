@@ -6,6 +6,9 @@ import WarRoom from './WarRoom.js';
 import Overview from './Overview.js';
 import Buildings from './Buildings.js';
 
+import { connect } from "react-redux";
+import {townchange} from './redux/actions';
+
 class Menu extends React.Component{
 	
 	constructor(props){
@@ -33,7 +36,7 @@ class Menu extends React.Component{
 		var overview = <Overview {...this.props}/>;
 		return(
 		<div className={styles.menu}>
-		<TickClock translations={this.props.translations} onTick={this.props.viewChangeCallback} interval={parseInt(this.props.nextTick)}/>
+		<TickClock translations={this.props.translations}/>
 		
 		
 		<Link target={overview} name={this.props.translations.OVERVIEW} nextTick={this.props.nextTick}/>
@@ -45,4 +48,4 @@ class Menu extends React.Component{
 	}
 }
 
-export default Menu;
+export default connect(null,{townchange})(Menu);

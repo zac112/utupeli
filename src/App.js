@@ -7,7 +7,7 @@ import Translations from './language.js';
 import REST from './connection';
 
 import { connect } from "react-redux";
-import {initialize, refresh} from './redux/actions';
+import {initialize, refresh, tick} from './redux/actions';
 
 class App extends React.Component{
 	constructor(props) {
@@ -37,10 +37,10 @@ class App extends React.Component{
 		this.setState({ width: window.innerWidth, height: window.innerHeight });
 	}
 
-	async getNextTick(){
+	getNextTick(){
 		REST.get('tick', res =>{
 			var time = parseInt(res.time)-new Date()+Math.random(1000)+1000;
-			this.setState({'nextTick':time});
+			this.props.tick({'nextTick':time})
 			setTimeout(this.fetchData.bind(this), time);			
 		});
 	}
@@ -59,7 +59,6 @@ class App extends React.Component{
 			});*/
 			this.getNextTick();
 		});	
-		setTimeout(this.render.bind(this),500);		
 	}
 
 	changeLanguage(lang){
@@ -91,9 +90,6 @@ class App extends React.Component{
 	changeview(newView){
 		this.setState({view:newView});
 	}
-	changeTown(newTown){
-		this.setState({town:this.state.towns[newTown]});
-	}
 	
 	statechange(state) {
 		this.setState(state);
@@ -121,7 +117,7 @@ class App extends React.Component{
 		}else{
 			return(
 			<div className={styles.app} style={{height:this.state.height, width:this.state.width}}>
-				<Menu translations={this.state.translations} userId={this.props.userId} townChangeCallback={this.changeTown.bind(this)} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
+				<Menu translations={this.state.translations} userId={this.props.userId} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
 				<Gameview className={styles.gameview}/>
 			</div>);
 		}
@@ -135,6 +131,11 @@ const mapStateToProps = (state) => {
 		userId: state.build.userId
 	});
 }
-export default connect(mapStateToProps,{initialize, refresh})(App);
+const actions = {
+	initialize, 
+	refresh, 
+	tick}
+
+export default connect(mapStateToProps,actions)(App);
 
 
