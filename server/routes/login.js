@@ -63,8 +63,8 @@ function createAccount(req, res){
 						coords:[0,0],
 						id:0,
 						buildings:{
-							farm:10,
-							house:20
+							farm:5,
+							house:5
 							},
 						buildqueue:{},
 						land:10,

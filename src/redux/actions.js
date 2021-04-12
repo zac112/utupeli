@@ -1,10 +1,8 @@
 import types from "./actionTypes";
 
-export const build_building = content => ({
-  type: types.BUILD_BUILDING,
-  payload: {    
-    content
-  }
+export const updateTown = town => ({
+	type: types.UPDATE_TOWN,
+	payload: town
 });
 
 export const initialize = payload => ({

@@ -62,6 +62,7 @@ process.on('SIGINT', shutDown);
 
 function shutDown() {
     console.log('Received kill signal, shutting down gracefully');
+	db.close();
     server.close(() => {
         console.log('Closed out remaining connections');
         process.exit(0);

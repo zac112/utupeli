@@ -1,7 +1,7 @@
 import React from 'react';
 import REST from './connection';
 import { connect } from "react-redux";
-import {build_building} from './redux/actions';
+import {updateTown} from './redux/actions';
 
 class Buildings extends React.Component{
 	
@@ -44,10 +44,7 @@ class Buildings extends React.Component{
 						}
 					
 					this.props.statechange(state);*/
-					this.props.build_building({
-						town:this.props.town.id,
-						'building': queue
-					});
+					this.props.updateTown(result['town']);
 				});
 				
 			};
@@ -88,12 +85,12 @@ const mapStateToProps = (state) => {
 	console.log(state);
 	return ({
 		userId: state.build.userId,
-		town: state.build.town,
+		town: state.build.towns[state.build.townIndex],
 		translations: state.build.translations,
-		buildqueue: state.build.town.buildqueue
+		buildqueue: state.build.towns[state.build.townIndex].buildqueue
 		});
 }
 const actiondispatch = {
-	build_building
+	updateTown
 }
 export default connect(mapStateToProps,actiondispatch)(Buildings);

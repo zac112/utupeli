@@ -74,7 +74,7 @@ class App extends React.Component{
 		this.props.initialize(
 		{...user,
 		userId:user.key,
-		town:user.towns[0],
+		townIndex:0,
 		translations:new Translations().getLang('en').translations
 		});
 				
@@ -101,7 +101,7 @@ class App extends React.Component{
 			<div className={styles.resourcebar}>
 				<div style={{flex: "1 1 100px"}}>{this.state.translations.GOLD}: {this.props.town.gold}</div>
 				<div style={{flex: "1 1 100px"}}>{this.state.translations.FOOD}: {this.props.town.food}</div>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.POPULATION}: {this.props.town.citizens}</div>
+				<div style={{flex: "1 1 100px"}}>{this.state.translations.POPULATION}: {this.props.town.population}</div>
 			</div>
 		);
 		const Gameview = () => (
@@ -110,7 +110,7 @@ class App extends React.Component{
 				{this.state.view}
 			</div>
 		);
-		console.log('styles',styles);
+		console.log('styles',this.props);
 		
 		if (this.state.view === undefined){
 			return (<Login translations={this.state.translations} login={this.login.bind(this)}/>);
@@ -125,9 +125,9 @@ class App extends React.Component{
 }
 
 const mapStateToProps = (state) => {
-	console.log("Matpstate",state);
+	console.log("Matpstate",state.build);
 	return({
-		town: state.build.town,
+		town: (state.build.towns) ?  state.build.towns[state.build.townIndex] : {},
 		userId: state.build.userId
 	});
 }

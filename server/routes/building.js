@@ -40,9 +40,13 @@ function build(req, res){
 		});
 		var buildqueue =  {};
 		buildqueue["gameData.towns.$.buildqueue"] = buildings;
-		console.log("buildque:",buildqueue);
+		town.buildqueue = buildings
+		
 		db.update('users',{key:data.key, "gameData.towns.$.id":data.townIndex},{"$set":buildqueue},()=> {
-			res.json({success:true});
+			res.json({
+				success:true,
+				town:town
+			});
 		});
 	});
 		
