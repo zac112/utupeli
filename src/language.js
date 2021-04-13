@@ -2,6 +2,12 @@ class Translations{
 	getLang(lang){
 		
 		var translations = {
+			/**
+			'constant':{
+			'fi':'',
+			'en':''
+			},
+			**/
 		'ARMORY':{
 			'fi':'Varustamo',
 			'en':'Armory'
@@ -61,6 +67,10 @@ class Translations{
 		'KNGIHT':{
 			'fi':'Ritari',
 			'en':'Knight'
+		},
+		'LAND':{
+			'fi':'Maa',
+			'en':'Land'
 		},
 		'LIBRARY':{
 			'fi':'Kirjasto',

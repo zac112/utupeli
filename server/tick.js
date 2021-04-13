@@ -4,6 +4,19 @@ function armyQueueTick(conn, player){
 	//Finish army units from queue
 }
 
+function landQueueTick(conn, player){
+	const landCost = (num) => (num*10-100);
+	player = player.gameData;
+	player.towns.forEach(town => {
+		console.log("S",town)
+		if(town.landqueue > 0 && town.gold > landCost(town.land + 1)){						
+			town.land += 1;
+			town.landqueue -= 1;
+			console.log("OK",town)
+		}
+	});
+}
+
 function buildQueueTick(conn, player){
 	const buildingCost = (num) => (num*10-100);
 	
@@ -49,7 +62,7 @@ function tick(){
 	var start = new Date();
 	console.log("Tick started at",start.toLocaleString());
 	
-	tickfuncs = [calculateFoodTick, calculateGoldTick, armyQueueTick, buildQueueTick]
+	tickfuncs = [calculateFoodTick, calculateGoldTick, armyQueueTick, buildQueueTick, landQueueTick]
 	db.find('users',{},(res)=>{		
 		res.forEach(player => {
 			console.log("Player before",player);

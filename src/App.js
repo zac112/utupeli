@@ -102,6 +102,7 @@ class App extends React.Component{
 				<div style={{flex: "1 1 100px"}}>{this.state.translations.GOLD}: {this.props.town.gold}</div>
 				<div style={{flex: "1 1 100px"}}>{this.state.translations.FOOD}: {this.props.town.food}</div>
 				<div style={{flex: "1 1 100px"}}>{this.state.translations.POPULATION}: {this.props.town.population}</div>
+				<div style={{flex: "1 1 100px"}}>{this.state.translations.LAND}: {this.props.town.land}</div>
 			</div>
 		);
 		const Gameview = () => (

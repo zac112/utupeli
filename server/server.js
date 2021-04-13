@@ -11,6 +11,7 @@ var gmailSecret = undefined;
 var login = require('./routes/login');
 var tick = require('./tick');
 var building = require('./routes/building');
+var town = require('./routes/town');
 
 fs.readFile('settings.json', 'utf8', function(err, data) {
 	if (err) throw err;
@@ -35,6 +36,8 @@ app.get("/verifyAccount/:user/:key", login.verifyAccountKey);
 app.get("/tick", (req, res) => res.json({time:tick.nextTick().getTime()}));
 
 app.post("/build",building.build);
+
+app.post('/expedition', town.expedition);
 
 app.get("/player/:id", (req, res) => {
 	db.findOne('users',{key:req.params.id}, player => {
