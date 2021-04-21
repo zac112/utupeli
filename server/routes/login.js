@@ -60,7 +60,7 @@ function createAccount(req, res){
 					hero:{						
 					},
 					towns:[{
-						coords:[0,0],
+						coords:"0,0",
 						id:0,
 						buildings:{
 							farm:5,

@@ -1,12 +1,55 @@
-var mongo = require('mongodb').MongoClient;
+//var mongo = require('mongodb').MongoClient;
+const mongoose = require('mongoose');
+const {Schema} = mongoose;
 var dbAddress;
 var db;
 
-function init(data){
-	dbAddress  = data.dbhost;
-	mongo.connect(dbAddress, function(err, database){
-		db = database;
+
+const heroSchema = new Schema({
+	level:Number
+});
+const townSchema = new Schema({
+			coords:String,
+			id:Number,
+			buildings:{
+				farm:Number,
+				house:Number
+				},
+			buildqueue:{},
+			land:Number,
+			population:Number,
+			gold:Number,
+			food:Number
+			});
+
+const gameSchema = new Schema({
+		hero:heroSchema,
+		towns:[townSchema]
 	});
+	
+const playerSchema = new mongoose.Schema({
+	
+	key:String,
+	created:{type:Date, default:Date.now},
+	verificationkey:String,
+	verified:Boolean,
+	name:String,
+	gameData:gameSchema
+});
+
+
+function init(data){
+	
+	dbAddress  = data.dbhost;
+	//mongoose.connect(dbAddress, {useNewUrlParser: true, useUnifiedTopology: true});
+	//db = mongoose.connection
+	//db.on('error', console.error.bind(console, 'connection error:'));
+	//db.once('open', function() {
+	//  console.log("We're in mongo!");
+	//});
+	/*mongo.connect(dbAddress, function(err, database){
+		db = database;
+	});*/
 }
 
 function close(){
@@ -73,5 +116,9 @@ module.exports = {
 	find:find,
 	findOne:findOne,
 	update:update,
-	insert:insert
+	insert:insert,
+	gameSchema:mongoose.model("Game",gameSchema),
+	heroSchema:mongoose.model("Hero",heroSchema),
+	townSchema:mongoose.model("Town",townSchema),
+	playerSchema:mongoose.model("Player",playerSchema)
 }

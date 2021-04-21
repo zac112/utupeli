@@ -63,14 +63,18 @@ function tick(){
 	console.log("Tick started at",start.toLocaleString());
 	
 	tickfuncs = [calculateFoodTick, calculateGoldTick, armyQueueTick, buildQueueTick, landQueueTick]
-	db.find('users',{},(res)=>{		
+	
+	db.playerSchema.find({}, (err, docs) => {
+		console.log(docs);
+	})
+	/*db.find('users',{},(res)=>{		
 		res.forEach(player => {
 			console.log("Player before",player);
 			tickfuncs.forEach(e => e(db, player))	
 			db.update('users',{key:player.key}, {"$set":player}, res => {});
 			console.log("Player after",player);
 		});		
-	});
+	});*/
 	
 	var end = new Date();
 	console.log("Tick finished at",end.toLocaleString(),"in",(end.getTime()-start.getTime()),"ms");

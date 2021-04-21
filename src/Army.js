@@ -1,5 +1,6 @@
 import React from 'react';
 
+import REST from './connection';
 class Army extends React.Component{
 	
 	render(){
@@ -8,7 +9,37 @@ class Army extends React.Component{
 		const Unit = (data) => {
 			const purchase = (event) => {
 				event.preventDefault();
-				//Send data to server
+				var type = data.type;
+				var queue = {};
+				queue[type] = formdata.amount;
+				REST.post('armybuild',{
+					key:this.props.userId,
+					town:this.props.town.id,
+					'army': queue
+				},
+				(result) => {
+					if(!result['success']){
+						console.log("Build failed.");
+						return;
+					}
+					console.log("Build success");
+					
+					//Send data to server
+					console.log(this.props);
+					console.log("Bought "+formdata.amount+" "+data.type);
+					/*var town = this.props.town;
+					town['buildqueue'][data.type] = (town['buildqueue'][data.type]|0)+ formdata.amount;
+					var towns = this.props.towns;
+					towns[this.props.town.id] = town 
+					var state = {
+						'town':town,
+						'towns':towns
+						}
+					
+					this.props.statechange(state);*/
+					this.props.updateTown(result['town']);
+				});
+				
 				console.log("Bought "+formdata.amount+" "+data.type);
 			};
 			const valuechange = (amount) =>{

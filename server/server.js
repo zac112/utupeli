@@ -1,4 +1,3 @@
-var mongo = require('mongodb').MongoClient;	
 var fs = require('fs');
 var cors = require('cors');
 var express = require('express');
@@ -7,10 +6,12 @@ var port=3001;
 var address="localhost";
 var dbAddress=undefined;
 var db=require('./db');
+var mongoose = require('mongoose');	
 var gmailSecret = undefined;
 var login = require('./routes/login');
 var tick = require('./tick');
 var building = require('./routes/building');
+var map = require('./routes/map');
 var town = require('./routes/town');
 
 fs.readFile('settings.json', 'utf8', function(err, data) {
@@ -21,6 +22,7 @@ fs.readFile('settings.json', 'utf8', function(err, data) {
 	console.log(db);
 	db.init(data);
 	login.init(data);
+	mongoose.connect(data.dbhost);
 });
 app.use(cors({
   origin: '*',
@@ -39,13 +41,16 @@ app.post("/build",building.build);
 
 app.post('/expedition', town.expedition);
 
+app.get('/map/:size/:x/:y',map.get);
+
 app.get("/player/:id", (req, res) => {
 	db.findOne('users',{key:req.params.id}, player => {
 		res.json({'player':player.gameData, 'success':true});
 		});
 	});
 
-try{	
+try{
+	
 	var server = app.listen(port, address, () =>{
 		console.log("Server running at "+address+":"+port);
 		
