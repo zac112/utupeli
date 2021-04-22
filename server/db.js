@@ -1,9 +1,14 @@
 //var mongo = require('mongodb').MongoClient;
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
-var dbAddress;
-var db;
+var fs = require('fs');
 
+module.exports = (dbhost) => {
+	mongoose.connect(dbhost, { useNewUrlParser: true })
+	.catch(error => console.log(error));
+	//var db = mongoose.createConnection(dbhost);
+	var db = mongoose;
+	db.connection.on('open', () => {console.log("we're in")})
 
 const heroSchema = new Schema({
 	level:Number
@@ -27,8 +32,8 @@ const gameSchema = new Schema({
 		towns:[townSchema]
 	});
 	
-const playerSchema = new mongoose.Schema({
-	
+const playerSchema = new Schema({
+	userId:String,
 	key:String,
 	created:{type:Date, default:Date.now},
 	verificationkey:String,
@@ -110,6 +115,19 @@ function update(table, query, values, callback){
 	//});
 }
 
+return {
+	init:init,
+	close:close,
+	find:find,
+	findOne:findOne,
+	update:update,
+	insert:insert,
+	gameSchema:db.model("Game",gameSchema),
+	heroSchema:db.model("Hero",heroSchema),
+	townSchema:db.model("Town",townSchema),
+	userSchema:db.model("User",playerSchema)
+}
+/*
 module.exports = {
 	init:init,
 	close:close,
@@ -117,8 +135,10 @@ module.exports = {
 	findOne:findOne,
 	update:update,
 	insert:insert,
-	gameSchema:mongoose.model("Game",gameSchema),
-	heroSchema:mongoose.model("Hero",heroSchema),
-	townSchema:mongoose.model("Town",townSchema),
-	playerSchema:mongoose.model("Player",playerSchema)
+	gameSchema:db.model("Game",gameSchema),
+	heroSchema:db.model("Hero",heroSchema),
+	townSchema:db.model("Town",townSchema),
+	playerSchema:db.model("Player",playerSchema)
+}
+*/
 }

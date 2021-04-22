@@ -1,29 +1,35 @@
 var fs = require('fs');
+var login = require('./routes/login');
+var mongoose = require('mongoose');	
 var cors = require('cors');
 var express = require('express');
 var app = express();
 var port=3001;
 var address="localhost";
 var dbAddress=undefined;
-var db=require('./db');
-var mongoose = require('mongoose');	
+var db;
+
+console.log("before")
+fs.readFile('settings.json', 'utf8', function(err, data) {
+	if (err) throw err;
+	var data = JSON.parse(data);
+	//mongoose.connect(data.dbhost)
+	db=require('./db')(data.dbhost);
+	global['db'] = db
+	console.log(global);
+	port = data.serverport;	
+	login.init(data);	
+});
+
+
+console.log("after")
+//var db=require('./db');
 var gmailSecret = undefined;
-var login = require('./routes/login');
 var tick = require('./tick');
 var building = require('./routes/building');
 var map = require('./routes/map');
 var town = require('./routes/town');
 
-fs.readFile('settings.json', 'utf8', function(err, data) {
-	if (err) throw err;
-	var data = JSON.parse(data);
-	port = data.serverport;		 
-	//data['dbconnection'] = mongo.connect(data.dbhost);
-	console.log(db);
-	db.init(data);
-	login.init(data);
-	mongoose.connect(data.dbhost);
-});
 app.use(cors({
   origin: '*',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
@@ -70,7 +76,7 @@ process.on('SIGINT', shutDown);
 
 function shutDown() {
     console.log('Received kill signal, shutting down gracefully');
-	db.close();
+	global.db.close();
     server.close(() => {
         console.log('Closed out remaining connections');
         process.exit(0);

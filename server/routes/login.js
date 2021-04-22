@@ -41,15 +41,78 @@ res
 	key:string
 }*/
 function createAccount(req, res){
+	var db = global.db;
 	let userId = crypto.createHash('sha256').update(req.body.id).digest('hex');
 	let key = crypto.createHash('md5').update(new Date().toString()).digest('hex');
 	let verificationkey = 100000-parseInt(Math.random()*10000);
 	var address = "https://ville-mobile.utu.fi/utupeli/verifyAccount/"+userId+"/"+verificationkey;
 	
+	db.userSchema.findById(userId, (err,player) => {
+		if(player == undefined){
+			var startingPlayer = new db.userSchema({
+				userId:userId,
+				key:key,
+				created:new Date(),
+				verificationkey:verificationkey,
+				verified:false,
+				gameData:{
+					hero:{						
+					},
+					towns:[{
+						coords:"0,0",
+						id:0,
+						buildings:{
+							farm:5,
+							house:5
+							},
+						buildqueue:{},
+						land:10,
+						population:10,
+						gold:100,
+						food:100
+						}]
+				}
+			});
+			console.log("player",startingPlayer)
+			startingPlayer.save((err, result)=>{
+				if (err) console.log(err);
+				console.log("Player created:",new Date()," - ",req.body.id," key:",key," verificationkey:",verificationkey);
+				
+				var transporter = nodemailer.createTransport({
+				  service: 'gmail',
+				  auth: {
+					user: 'elokkila@gmail.com',
+					pass: gmailSecret
+				  }
+				});
+				if(production){
+					let info = transporter.sendMail({
+						from: '"Erno Lokkila" <eolokk@utu.fi>', // sender address
+						to: "eolokk@utu.fi", // list of receivers
+						subject: "Rekisteröitymislinkkisi", // Subject line
+						text: "English version below.\nMoi.\n\nKopioi seuraava linkki selaimeesi ja saat avaimen, jolla voit kirjautua kaupunkiisi. "+address+".\n\nHi\n\nCopy the following link to your browser to receive your key, which you can use to log on to your city! "+address+"\n\n-Erno", // plain text body
+					});
+					res.json({success:true});
+				}else{
+					res.json({success:true, dev:address});
+				}
+			});
+		}else if (!result.verified){
+			if(production)
+				res.json({success:true});
+			else
+				res.json({success:true, dev:address});
+		}else{
+			res.json({});	
+		}	
+	});
+	
+	/*
 	db.findOne('users', {_id:userId}, (result)=>{
 		console.log("Req:",req.body);
 		console.log("found player",result);
-		if (result == null){
+		if (result == null){	
+
 			var startingPlayer = {
 				_id:userId,
 				key:key,
@@ -107,7 +170,7 @@ function createAccount(req, res){
 			res.json({});	
 		}	
 		
-	});
+	});*/
 };
 
 function verifyAccountKey(req, res){

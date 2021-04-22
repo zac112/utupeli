@@ -1,12 +1,11 @@
-var db = require('./db.js');
+var db = global['db'];//require('./db.js');
 
-function armyQueueTick(conn, player){
+function armyQueueTick(player){
 	//Finish army units from queue
 }
 
-function landQueueTick(conn, player){
+function landQueueTick(player){
 	const landCost = (num) => (num*10-100);
-	player = player.gameData;
 	player.towns.forEach(town => {
 		console.log("S",town)
 		if(town.landqueue > 0 && town.gold > landCost(town.land + 1)){						
@@ -17,12 +16,11 @@ function landQueueTick(conn, player){
 	});
 }
 
-function buildQueueTick(conn, player){
+function buildQueueTick(player){
 	const buildingCost = (num) => (num*10-100);
 	
-	player = player.gameData;
 	player.towns.forEach(town => {
-		if (Object.keys(town.buildqueue).length == 0) return;
+		if (!town.buildqueue || Object.keys(town.buildqueue).length == 0) return;
 		var numOfBuildings = Object.values(town.buildings).recude((total, num) => total+num,0);
 		if(town.gold > getBuildingCost(numOfBuildings+1 && town.land > 0)){
 			var keys = Object.keys(town.buildqueue)
@@ -44,15 +42,14 @@ function buildQueueTick(conn, player){
 	
 }
 
-function calculateGoldTick(conn, player){
-	player = player.gameData;
+function calculateGoldTick(player){
 	player.towns.forEach(town => {
 		town.gold += (town.buildings.goldmine || 0)*10;
 	});
 }
 
-function calculateFoodTick(conn, player){
-	player = player.gameData;
+function calculateFoodTick(player){
+	console.log("food",player)
 	player.towns.forEach(town => {
 		town.food += (town.buildings.farm || 0)*10;
 	});
@@ -60,12 +57,20 @@ function calculateFoodTick(conn, player){
 
 function tick(){	
 	var start = new Date();
+	var db = global.db;
 	console.log("Tick started at",start.toLocaleString());
 	
 	tickfuncs = [calculateFoodTick, calculateGoldTick, armyQueueTick, buildQueueTick, landQueueTick]
 	
-	db.playerSchema.find({}, (err, docs) => {
-		console.log(docs);
+	db.userSchema.find({}, (err, res) => {
+		if (err) console.log(err);
+		console.log(res)
+		res.forEach(player => {
+			console.log("Player before",player);
+			tickfuncs.forEach(e => e(player.gameData))	
+			player.save();
+			console.log("Player after",player);
+		});
 	})
 	/*db.find('users',{},(res)=>{		
 		res.forEach(player => {
@@ -81,7 +86,7 @@ function tick(){
 }
 
 //const tickInterval = 10*60*1000;
-const tickInterval = 1*60*1000;
+const tickInterval = 1*10*1000;
 
 function nextTick(){
 	var t = tickInterval/60/1000;
