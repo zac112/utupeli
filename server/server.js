@@ -50,7 +50,7 @@ app.post('/expedition', town.expedition);
 app.get('/map/:size/:x/:y',map.get);
 
 app.get("/player/:id", (req, res) => {
-	db.findOne('users',{key:req.params.id}, player => {
+	global.db.userSchema.findOne({key:req.params.id}, (err,player) => {
 		res.json({'player':player.gameData, 'success':true});
 		});
 	});

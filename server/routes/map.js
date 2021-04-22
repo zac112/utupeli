@@ -1,9 +1,3 @@
-var db = require ('../db');
-var mapArray
-
-function init(data){
-	
-}
 /*
 endpoint /map/:size/:x/:y
 returning grid size: size*2+1 centered at x,y
@@ -23,7 +17,7 @@ function get(req,res){
 	}
 	console.log("Searching:",coords)
 	//db.find('world',{_id:{$in:coords}},result => {
-	db.find('users',{"gameData.towns":{'$elemMatch':{'coords':{'$in':coords}}}},result => {
+	global.db.userSchema.find({"gameData.towns":{'$elemMatch':{'coords':{'$in':coords}}}},(err,result) => {
 		console.log("Found world:", result);
 		let response = {};
 		result.forEach(player => {

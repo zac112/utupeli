@@ -19,7 +19,7 @@ res
 }*/
 function login(req, res){	
 console.log("login 21 trying to login:",req.body);
-	db.findOne('users', {key:req.body.key}, (result) => {
+	global.db.userSchema.findOne({key:req.body.key}, (err,result) => {
 		if(result == null){
 			res.json({});
 		}else{
@@ -73,7 +73,6 @@ function createAccount(req, res){
 						}]
 				}
 			});
-			console.log("player",startingPlayer)
 			startingPlayer.save((err, result)=>{
 				if (err) console.log(err);
 				console.log("Player created:",new Date()," - ",req.body.id," key:",key," verificationkey:",verificationkey);
@@ -107,94 +106,34 @@ function createAccount(req, res){
 		}	
 	});
 	
-	/*
-	db.findOne('users', {_id:userId}, (result)=>{
-		console.log("Req:",req.body);
-		console.log("found player",result);
-		if (result == null){	
-
-			var startingPlayer = {
-				_id:userId,
-				key:key,
-				created:new Date(),
-				verificationkey:verificationkey,
-				verified:false,
-				gameData:{
-					hero:{						
-					},
-					towns:[{
-						coords:"0,0",
-						id:0,
-						buildings:{
-							farm:5,
-							house:5
-							},
-						buildqueue:{},
-						land:10,
-						population:10,
-						gold:100,
-						food:100
-						}]
-				}
-			};
-			
-			db.insert('users', startingPlayer, (result)=>{
-				console.log("Player created:",new Date()," - ",req.body.id," key:",key," verificationkey:",verificationkey);
-				
-				var transporter = nodemailer.createTransport({
-				  service: 'gmail',
-				  auth: {
-					user: 'elokkila@gmail.com',
-					pass: gmailSecret
-				  }
-				});
-				if(production){
-					let info = transporter.sendMail({
-						from: '"Erno Lokkila" <eolokk@utu.fi>', // sender address
-						to: "eolokk@utu.fi", // list of receivers
-						subject: "Rekisteröitymislinkkisi", // Subject line
-						text: "English version below.\nMoi.\n\nKopioi seuraava linkki selaimeesi ja saat avaimen, jolla voit kirjautua kaupunkiisi. "+address+".\n\nHi\n\nCopy the following link to your browser to receive your key, which you can use to log on to your city! "+address+"\n\n-Erno", // plain text body
-					});
-					res.json({success:true});
-				}else{
-					res.json({success:true, dev:address});
-				}
-			});
-			
-		}else if (!result.verified){
-			if(production)
-				res.json({success:true});
-			else
-				res.json({success:true, dev:address});
-		}else{
-			res.json({});	
-		}	
-		
-	});*/
 };
 
+/**
+endpoint: /:user/:key
+**/
 function verifyAccountKey(req, res){
 	let user = req.params.user;
 	let key = req.params.key;
 	
 	let query = {
 		verificationkey:parseInt(key),
-		_id:user};
+		userId:user};
 			
-	db.findOne('users', query, (userData) => {
+	global.db.userSchema.findOne(query, (err,userData) => {
 		console.log(userData);
 		if(!userData){
 			res.send("Nothing to verify");
 		}else{
-			let values = {$set: {verified:true}};
-			db.update('users',query,values,(result) => {
-				if(result.result.nModified == 1){
-					res.send("Verified. Use the following key to log in and start playing! "+userData.key);
-					console.log("Player verified:",user);						
-				}else{
-					res.send("Use the following key to log in and start playing! "+userData.key);
-				}
-			});
+			
+			if(userData.verified){
+				res.send("Use the following key to log in and start playing! "+userData.key);
+			}else{
+				userData.verified = true;
+				userData.save();
+				res.send("Verified. Use the following key to log in and start playing! "+userData.key);
+				console.log("Player verified:",user);	
+			}
+			
 							
 		}			
 	});
