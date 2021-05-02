@@ -37,30 +37,6 @@ class App extends React.Component{
 		this.setState({ width: window.innerWidth, height: window.innerHeight });
 	}
 
-	getNextTick(){
-		REST.get('tick', res =>{
-			var time = parseInt(res.time)-new Date()+Math.random(1000)+1000;
-			this.props.tick({'nextTick':time})
-			setTimeout(this.fetchData.bind(this), time);			
-		});
-	}
-	
-	fetchData(){
-		var townid = this.props.town.id		
-		REST.get('player/'+this.props.userId, result =>{
-			if (!result['success']) return;
-			this.props.refresh({
-				...result.player,
-				town:result.player.towns[townid]			
-			});
-			/*this.setState({
-			...result.player,
-			town:result.player.towns[townid]			
-			});*/
-			this.getNextTick();
-		});	
-	}
-
 	changeLanguage(lang){
 		if (lang === "en" || lang === "fi"){
 			var t = new Translations();
@@ -73,6 +49,7 @@ class App extends React.Component{
 		console.log("User logged in ",user);
 		this.props.initialize(
 		{...user,
+		name:user['name'],
 		userId:user.key,
 		townIndex:0,
 		translations:new Translations().getLang('en').translations
@@ -84,8 +61,6 @@ class App extends React.Component{
 		//	town:user.towns[0],
 			view:<Overview/>
 			});
-		
-		this.getNextTick();
 	}
 	changeview(newView){
 		this.setState({view:newView});
@@ -95,29 +70,63 @@ class App extends React.Component{
 		this.setState(state);
 	}
 	
+	namechange(event){
+		event.preventDefault()
+		
+		console.log("name changed not yet",event.target)
+		var oldName = this.state.name;		
+		console.log("name changed")
+		REST.post("namechange",{
+			'userId':this.props.userId,
+			'newName':this.state.name
+		}, result => {
+			if (!result.success)
+				this.setState({'name':oldName})
+			}
+		);
+		this.setState({nameChange:false})
+		
+		
+	}
 	render() {		
 		
-		const Resourcebar = () => (
-			<div className={styles.resourcebar}>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.GOLD}: {this.props.town.gold}</div>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.FOOD}: {this.props.town.food}</div>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.POPULATION}: {this.props.town.population}</div>
-				<div style={{flex: "1 1 100px"}}>{this.state.translations.LAND}: {this.props.town.land}</div>
+		const Resourcebar = () => {
+						
+			let name = <div onClick={() => this.setState({nameChange:true})}>
+				<div>The kingdom of {this.props.name}. (Click here to change name.)</div>
 			</div>
-		);
+			
+			if (this.state.nameChange){
+				name = <div>The kingdom of <form onSubmit={this.namechange.bind(this)}>
+					<input type='text' onChange={(event) => {this.setState({name:event.target.value});}} defaultValue={this.state.name}/>
+					<input type='submit' value='OK'/>
+				</form>.</div>
+			}
+			return(
+			<div>
+				{name}
+				<div className={styles.resourcebar}>
+					<div style={{flex: "1 1 100px"}}>{this.state.translations.GOLD}: {this.props.town.gold}</div>
+					<div style={{flex: "1 1 100px"}}>{this.state.translations.FOOD}: {this.props.town.food}</div>
+					<div style={{flex: "1 1 100px"}}>{this.state.translations.POPULATION}: {this.props.town.population}</div>
+					<div style={{flex: "1 1 100px"}}>{this.state.translations.LAND}: {this.props.town.land}</div>
+				</div>
+			</div>
+			);
+		}
 		const Gameview = () => (
 			<div className={styles.gameview}>
 				<Resourcebar/>
 				{this.state.view}
 			</div>
 		);
-		console.log('styles',this.props);
+		console.log('styles',this.state);
 		
 		if (this.state.view === undefined){
 			return (<Login translations={this.state.translations} login={this.login.bind(this)}/>);
 		}else{
 			return(
-			<div className={styles.app} style={{height:this.state.height, width:this.state.width}}>
+			<div className={styles.app} style={{height:this.state.height, width:this.state.width}} onClick={() => this.nameChange}>
 				<Menu translations={this.state.translations} userId={this.props.userId} viewChangeCallback={this.changeview.bind(this)} statechange={this.statechange.bind(this)}/>
 				<Gameview className={styles.gameview}/>
 			</div>);
@@ -129,7 +138,8 @@ const mapStateToProps = (state) => {
 	console.log("Matpstate",state.build);
 	return({
 		town: (state.build.towns) ?  state.build.towns[state.build.townIndex] : {},
-		userId: state.build.userId
+		userId: state.build.userId,
+		name: state.build.name
 	});
 }
 const actions = {

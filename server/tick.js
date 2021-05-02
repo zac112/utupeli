@@ -76,7 +76,7 @@ function tick(){
 }
 
 //const tickInterval = 10*60*1000;
-const tickInterval = 1*10*1000;
+const tickInterval = 1*60*1000;
 
 function nextTick(){
 	var t = tickInterval/60/1000;

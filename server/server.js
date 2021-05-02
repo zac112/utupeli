@@ -29,6 +29,7 @@ var tick = require('./tick');
 var building = require('./routes/building');
 var map = require('./routes/map');
 var town = require('./routes/town');
+var player = require('./routes/player');
 
 app.use(cors({
   origin: '*',
@@ -51,10 +52,39 @@ app.get('/map/:size/:x/:y',map.get);
 
 app.get("/player/:id", (req, res) => {
 	global.db.userSchema.findOne({key:req.params.id}, (err,player) => {
+		if (err){ 
+			console.log(err);
+			return;
+		}
+		if(!player) {
+			console.log("No player:",req.params.id);
+			res.json({});
+			return;
+		}
 		res.json({'player':player.gameData, 'success':true});
 		});
 	});
 
+app.post("/namechange", player.namechange)
+
+app.get("/test", (req, res) => {
+	let coords = ["2,2"];
+	/*global.db.userSchema.find({$or:[
+		{"gameData.towns":{'$elemMatch':{'coords':{'$in':coords}}}},
+		{"gameData.hero":{'$elemMatch':{'coords':{'$in':coords}}}}
+		]},(err,result) => {
+			res.json(result);
+		});*/
+		
+	global.db.userSchema.find({'$or':[
+		{"gameData.towns.coords":{'$in':coords}},
+		{"gameData.hero.coords":{'$in':coords}}
+		]}
+		,(err,result) => {
+			result['time']=Date.now();
+			res.json(result);
+		});
+})
 try{
 	
 	var server = app.listen(port, address, () =>{

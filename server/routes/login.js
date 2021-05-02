@@ -25,7 +25,7 @@ console.log("login 21 trying to login:",req.body);
 		}else{
 			console.log("login 25: logged in",result,result['verified'], (typeof result['verified']));
 			
-			if(result['verified']) res.json({'player':result['gameData']});
+			if(result['verified']) res.json({'player':result['gameData'], 'name':result['kingdom']});
 			else res.json({});
 		}
 	});
@@ -136,9 +136,9 @@ function verifyAccountKey(req, res){
 			
 							
 		}			
-	});
-	
+	});	
 }
+
 module.exports = {
 	init:init,
 	login:login,

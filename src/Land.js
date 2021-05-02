@@ -34,7 +34,7 @@ class Land extends React.Component{
 	}
 	
 	render(){
-		var text = <div>Land. Fund expeditions to get more. Funding expeditions costs scouts and gold, additionally each piece of land is harder to find and thus costs more. Your next piece of land will cost {this.props.landScoutCost} scouts and {this.props.landGoldCost} gold. You are currently eploring {this.props.landqueue} land</div>
+		var text = <div>Land. Fund expeditions to get more. Funding expeditions costs scouts and gold, additionally each piece of land is harder to secure and thus costs more. Your next piece of land will cost {this.props.landScoutCost} scouts and {this.props.landGoldCost} gold. You are currently eploring {this.props.landqueue} land</div>
 		var limit = ""
 		if(this.props.maxLand) limit = <div>You are allowed to have at most {this.props.maxLand} land here.</div>;
 		

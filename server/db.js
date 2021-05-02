@@ -11,9 +11,11 @@ module.exports = (dbhost) => {
 	db.connection.on('open', () => {console.log("we're in")})
 
 const heroSchema = new Schema({
+	coords:String,
 	level:Number
 });
 const townSchema = new Schema({
+			name:String,
 			coords:String,
 			id:Number,
 			buildings:{
@@ -35,10 +37,10 @@ const gameSchema = new Schema({
 const playerSchema = new Schema({
 	userId:String,
 	key:String,
+	kingdom:String,
 	created:{type:Date, default:Date.now},
 	verificationkey:String,
-	verified:Boolean,
-	name:String,
+	verified:Boolean,	
 	gameData:gameSchema
 });
 

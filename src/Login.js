@@ -77,7 +77,7 @@ class Login extends React.Component{
 				console.log("Got logged in player:",res);
 				if(res['player']){
 					console.log(data.key);
-					this.props.login({...res['player'], key:data.key});
+					this.props.login({...res['player'], name:res['name'], key:data.key});
 				}else{
 					this.setState({message:"No player data found."});
 				}

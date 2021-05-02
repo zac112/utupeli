@@ -1,20 +1,21 @@
 import React from 'react';
 
+import REST from './connection.js';
 import { connect } from "react-redux";
+import {refresh} from './redux/actions';
 
 class TickClock extends React.Component{
 	
 	constructor(props){
 		super(props);
 		
-		this.state = {interval:props.nextTick};
-		console.log(this.state);
+		this.state = {interval:0};
 
 	}
 	
 	componentDidMount(){
-		this.refresher = setTimeout(this.refresh.bind(this),this.props.nextTick);
-		this.ticker = setInterval(this.tick.bind(this), 1000);
+		this.getNextTick();
+		this.ticker = setInterval(() => this.setState({interval:Math.max(this.state.interval-1000,0)}), 1000);
 	}
 	
 	componentWillUnmount(){
@@ -22,19 +23,24 @@ class TickClock extends React.Component{
 		clearInterval(this.ticker);		
 	}
 	
-	refresh() {
-		//get data from server		
-		
-		this.setState({interval:this.props.nextTick});
-		this.refresher = setTimeout(this.refresh.bind(this),this.props.nextTick);
-		
-	}
-	
-	tick(){
-		var time = this.state.interval;
-		this.setState({interval:time-1000});
+	getNextTick(){
+		REST.get('tick', res =>{
+			var time = parseInt(res.time)-new Date()+Math.random(1000)+1000;
+			this.setState({'interval':time})
+			this.refresh()
+			this.refresher = setTimeout(this.getNextTick.bind(this),time);			
+		});
 	}
 
+	refresh() {
+		//var townid = this.props.town.id		
+		REST.get('player/'+this.props.userId, result =>{
+			if (!result['success']) return;
+			this.props.refresh({
+				...result.player//,				town:result.player.towns[townid]			
+			});
+		});	
+	}
 	
 	render(){
 		return(
@@ -45,8 +51,9 @@ class TickClock extends React.Component{
 	}
 }
 
+
 const mapStateToProps = (state) => {
-	return {'nextTick': parseInt(state.build.nextTick)}
+	return {'userId': state.build.userId}
 }
 
-export default connect(mapStateToProps)(TickClock);
+export default connect(mapStateToProps,{refresh})(TickClock);
