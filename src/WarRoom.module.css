@@ -1,0 +1,43 @@
+.flexItem{
+	display:flex;
+	align-items: flex-start;
+	flex-flow: row no-wrap;
+	height: 50px;
+}
+.container{
+	position: relative;
+	max-width: 300px;
+}
+		
+.overlay{
+  position: absolute;
+  top: 0;
+  left:0;
+  background: rgba(0, 0, 0, 0);
+  width: 100%;
+  transition: .5s ease;
+  color: white;
+  font-size: 20px;
+  text-align: center;
+}
+		
+.menu{
+	position:absolute;
+	display:flex;
+	flex-direction:column;
+	justify-content:flex-start;
+	background-color:#dddddd;
+	padding:10px;
+	overflow:hidden;
+	-webkit-transition: height 1s ease-in;
+}
+
+.hidden{
+	position:absolute;	
+	display:none;
+	height:0px;	
+	-webkit-transition: height 1s ease-in
+}
+
+.menuItem{
+}

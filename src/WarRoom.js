@@ -7,13 +7,16 @@ import ownhero from './images/hero.png';
 import owntown from './images/owntown.png';
 import REST from './connection.js';
 
+
+import styles from './WarRoom.module.css';
 import { connect } from "react-redux";
 
 class WarRoom extends React.Component{
 	
 	constructor(props){
 		super(props)
-		this.state = {'loading':true}
+		this.state = {'loading':true, 'menuStyle':'hidden'}
+		this.selectionmenu.bind(this);
 	}
 	
 	componentDidMount(){
@@ -32,89 +35,104 @@ class WarRoom extends React.Component{
 	}
 	
 	selectionmenu(data){
-		console.log(data)
+		console.log(data);
+		let {x,y} = data;
+		this.setState({
+			x:x,
+			y:y,
+			'menuStyle':'visible',
+			'menuData':data.player
+			});
 	}
 	
-	render(){		
-	
-		let flexItem = {
-			display:'flex', 
-			alignItems: 'flex-start', 
-			flexFlow: 'row no-wrap',
-			height: '50px'
-		}
-		let container = {
-				position: "relative",
-				max_width: "300px"
-				
-			};
+	render(){			
+		let imgSize = 50;
 		
-		let overlay ={
-		  position: "absolute",
-		  top: 0,
-		  left:0,
-		  background: "rgba(0, 0, 0, 0)",
-		  width: "100%",
-		  transition: ".5s ease",
-		  color: "white",
-		  font_size: "20px",
-		  text_align: "center"
-		  
+		const Menu = (props) => {
+			const TownButton = (props1) => {				
+				if (!this.state.menuData?.towns) return null;
+				
+				return(
+				<div className={styles.menuItem}>
+					<button onClick={()=>{ this.setState({'townVisible':!this.state.townVisible}); }}>Town</button>
+					<div style={{'display':(this.state.townVisible?'block':'none')}}>
+					block
+					</div>
+				</div>);
+			}
+			const HeroButton = (props1) => {
+				console.log(this.state.menuData)
+				if (!this.state.menuData?.heros) return "";
+				
+				return(
+				<div className={styles.menuItem}>
+					<button onClick={()=>{ this.setState({'heroVisible':!this.state.heroVisible}); }}>Hero</button>
+					<div style={{'display':(this.state.heroVisible?'block':'none')}}>
+					<button onClick={()=>{ this.setState({'heroVisible':!this.state.heroVisible}); }}>Move hero</button>
+					</div>
+				</div>);
+			}
+			const DungeonButton = (props1) => {
+				if (!this.state.menuData?.enemys) return "";
+				
+				return <button>Town</button>
+			}
+			
+			console.log("Room props:",props)
+			let cname = styles.menu;
+			if (this.state.menuStyle === "hidden"){
+				cname = cname && styles.hidden;
+			}
+			let y = this.state.size*imgSize/2+this.state.y*imgSize;
+			let x = this.state.size*imgSize/2+this.state.x*imgSize;
+			let height = this.state.height;
+			console.log("xy",x,y);
+			return(
+			<div className={cname} style={{top:y+"px", left:x+"px",zIndex:2}} onMouseLeave={()=>{this.setState({'menuStyle':'hidden'})}}>	
+				<TownButton data={this.props?.player?.towns}/>
+				<HeroButton data={this.props?.player?.heros}/>
+			<div className={styles.menuItem}>
+				<button onClick={()=>{this.setState({'menuStyle':'hidden'})}}>Close</button>
+			</div>
+			</div>
+			);
 		}
-		const Square = (data) => {
-			//console.log(data)
+		
+		let counter = 0;
+		const Square = (data) => {			
 			if (!data.player)
-				return(	<div style={container}>
-						<img alt="" src={grass}></img>
+				return(	<div key={counter++} className={styles.container}>
+						<img key={counter++}  alt="" src={grass}/>
 					</div>);
 					
 			let {towns,roads,enemy,heros} = data.player;
 			let coord = data.x+","+data.y;
-			let result = [<img key={coord} alt="" src={grass}/>];
+			let result = [<img key={counter++} alt="" src={grass}/>];
+			
+			if(roads?.length > 0){
+				result[0] = <img key={counter++}  alt="" src={road}/>;
+			}
 			
 			if (towns?.length > 0)
 				if(towns.includes(this.props.name))
-					result.push(<img alt="" style={overlay} src={owntown} onClick={() => {this.selectionmenu(data.player)}}/>);
+					result.push(<img key={counter++} alt="" className={styles.overlay} src={owntown} onClick={() => {this.selectionmenu(data)}}/>);
 				else
-					result.push(<img alt="" style={overlay} src={town} onClick={() => {this.selectionmenu(data.player)}}></img>);
+					result.push(<img key={counter++} alt="" className={styles.overlay} src={town} onClick={() => {this.selectionmenu(data)}}/>);
 
 			
 			if(heros?.length > 0){
 				if(heros.includes(this.props.name))
-					result.push(<img alt="" style={overlay} src={ownhero} onClick={() => {this.selectionmenu(data.player)}}/>);
+					result.push(<img key={counter++} alt="" className={styles.overlay} src={ownhero} onClick={() => {this.selectionmenu(data)}}/>);
 				else
-					result.push(<img alt="" style={overlay} src={hero} onClick={() => {this.selectionmenu(data.player)}}></img>);
+					result.push(<img key={counter++} alt="" className={styles.overlay} src={hero} onClick={() => {this.selectionmenu(data)}}/>);
 			}
-			
-			if(roads?.length > 0){
-				result[0] = <img alt="" src={road}/>;
-			}
-			
 			
 			if(enemy?.length > 0){								
-				result.push(<img alt="" style={overlay} src={owntown} onClick={() => {this.selectionmenu(data.player)}}/>);
+				result.push(<img key={counter++} alt="" className={styles.overlay} src={owntown} onClick={() => {this.selectionmenu(data)}}/>);
 			}
-			
-			/*if (data.player){
-				if (data.player == this.props.name)
-					return(	<div style={container}>
-						<img alt="" src={grass}></img>
-						<img alt="" style={overlay} src={owntown} onClick={() => {console.log(data.player)}}></img>
-					</div>);
-				else if (data.player == 'road'){
-					return(	<div style={container}>
-						<img alt="" src={road}></img>
-					</div>);
-				}
-				else
-					return(	<div style={container}>
-						<img alt="" src={grass}></img>
-						<img alt="" style={overlay} src={town} onClick={() => {console.log(data.player)}}></img>
-					</div>);
-			}
-			else*/
+
 			return(	
-			<div style={container}>
+			<div key={counter++} className={styles.container}>
 				{result}
 			</div>
 			);
@@ -124,7 +142,7 @@ class WarRoom extends React.Component{
 		const Row = (row) =>{
 			var result = []
 			for (var y=-(size/2); y<(size/2)+1; y++){
-				result.push(<Square x={row.x} y={y} player={row.data[row.x+','+y]}/>);
+				result.push(<Square key={counter++} x={row.x} y={y} player={row.data[row.x+','+y]}/>);
 			}
 			return result.map(e=>e);
 		};		
@@ -134,10 +152,13 @@ class WarRoom extends React.Component{
 			var size= this.state.size;
 			var result=[];
 			for (var x=-(size/2); x<(size/2)+1; x++){
-				result.push(<div style={flexItem}><Row x={x} size={size} data={this.state.data}/></div>);
+				result.push(<div key={counter++} className={styles.flexItem}>
+					<Row key={counter++} x={x} size={size} data={this.state.data}/>
+				</div>);
 			}
 			return(				
-			<div>
+			<div style={{position:"relative"}}>
+			<Menu/>
 			{result}
 			</div>
 			);
